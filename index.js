@@ -34,11 +34,11 @@ function serve (root, opts) {
   debug('static "%s" %j', root, opts)
   opts.root = resolve(root)
   if (opts.index !== false) opts.index = opts.index || 'index.html'
-
+  // 通过defer参数来决定中间件的执行，next的位置。
   if (!opts.defer) {
     return async function serve (ctx, next) {
       let done = false
-
+      // 如果是HEAD和GET请求，直接调用koa-send模块
       if (ctx.method === 'HEAD' || ctx.method === 'GET') {
         try {
           done = await send(ctx, ctx.path, opts)
@@ -48,7 +48,7 @@ function serve (root, opts) {
           }
         }
       }
-
+      //完成后，走向下一中间件
       if (!done) {
         await next()
       }
